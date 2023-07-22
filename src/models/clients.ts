@@ -7,7 +7,7 @@ import {
 } from 'sequelize';
 import db from '../db';
 
-class Client extends Model<
+export class Client extends Model<
   InferAttributes<Client>,
   InferCreationAttributes<Client>
 > {
@@ -39,8 +39,11 @@ export default Client.init(
       unique: true,
     },
     number: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
+      validate: {
+        isInt: true,
+      },
     },
     address: {
       type: new DataTypes.STRING(64),

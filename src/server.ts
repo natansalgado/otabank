@@ -1,11 +1,16 @@
-import express from 'express';
-import routes from './routes';
+import express, { Request, Response } from 'express';
+import ClientsRoutes from './routes/clients';
 import db from './db';
 
 const app = express();
 
 app.use(express.json());
-app.use(routes);
+
+app.use('/clients', ClientsRoutes);
+
+app.get('/', (req: Request, res: Response) => {
+  return res.json({ message: 'Hello world!' });
+});
 
 try {
   db.sync();
