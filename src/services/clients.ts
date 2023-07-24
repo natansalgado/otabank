@@ -22,7 +22,14 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
     where: { email: client.email },
   });
 
-  if (!client.name || !client.email || !client.address || !client.number || !client.password) return new Error("Invalid camp")
+  if (
+    !client.name ||
+    !client.email ||
+    !client.address ||
+    !client.number ||
+    !client.password
+  )
+    return new Error('Invalid camp');
 
   if (emailExists) return new Error('Email already exists.');
 
