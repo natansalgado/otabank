@@ -12,7 +12,11 @@ const findAll = async (): Promise<Client[]> => {
 };
 
 const findClient = async (id: string): Promise<Client | Error> => {
+  if (!Number.isInteger(Number(id)))
+    return new Error('Invalid ID format, use a integer number.');
+
   const repo = await ClientRepository.findByPk(id);
+
   if (!repo) return new Error("Client doesn't exists.");
   return repo;
 };
@@ -40,8 +44,11 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
 
 const updateClient = async (
   id: string,
-  client: ClientInfos,
+  client: Partial<ClientInfos>,
 ): Promise<Client | Error> => {
+  if (!Number.isInteger(Number(id)))
+    return new Error('Invalid ID format, use a integer number.');
+
   const updateClient: Partial<ClientInfos> = {
     name: client.name !== '' ? client.name : undefined,
     email: client.email !== '' ? client.email : undefined,
@@ -61,6 +68,9 @@ const updateClient = async (
 };
 
 const deleteClient = async (id: string): Promise<Client | Error> => {
+  if (!Number.isInteger(Number(id)))
+    return new Error('Invalid ID format, use a integer number.');
+
   const repo = await ClientRepository.findByPk(id);
 
   if (!repo) return new Error("Client doesn't exists.");

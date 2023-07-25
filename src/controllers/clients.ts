@@ -3,15 +3,12 @@ import ClientServices from '../services/clients';
 
 const findAll = async (req: Request, res: Response) => {
   const result = await ClientServices.findAll();
-  
+
   return res.json(result);
 };
 
 const findClient = async (req: Request, res: Response) => {
   const { id } = req.params;
-
-  if (!Number.isInteger(Number(id)))
-    return res.status(400).json('Invalid ID format, use a integer number.');
 
   const result = await ClientServices.findClient(id);
 
@@ -34,9 +31,6 @@ const updateClient = async (req: Request, res: Response) => {
   const { id } = req.params;
   const client = req.body;
 
-  if (!Number.isInteger(Number(id)))
-    return res.status(400).json('Invalid ID format, use a integer number.');
-
   const result = await ClientServices.updateClient(id, client);
 
   if (result instanceof Error) return res.status(404).json(result.message);
@@ -46,9 +40,6 @@ const updateClient = async (req: Request, res: Response) => {
 
 const deleteClient = async (req: Request, res: Response) => {
   const { id } = req.params;
-
-  if (!Number.isInteger(Number(id)))
-    return res.status(400).json('Invalid ID format, use a integer number.');
 
   const result = await ClientServices.deleteClient(id);
 

@@ -12,6 +12,7 @@ const sequelize = new Sequelize({
   database: dbName,
   host: dbHost,
   dialect: 'postgres',
+  logging: false
 });
 
 export default sequelize;
