@@ -1,5 +1,4 @@
-import ClientRepository from '../models/clients';
-import { Client } from '../models/clients';
+import ClientRepository, { Client } from '../models/clients';
 
 type ClientInfos = Pick<
   Client,
