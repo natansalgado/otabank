@@ -1,7 +1,6 @@
 import ClientsServices from './clients';
 
 describe('Clients Services', () => {
-
   const clientData = {
     name: 'Test Name',
     password: 'TestPassword123',
@@ -131,13 +130,13 @@ describe('Clients Services', () => {
       expect(deletedClient.address).toBe(clientData.address);
     });
 
-    it('should not be able to delete a nonesxistent client infos.', async () => {
+    it('should not be able to delete a nonesxistent client.', async () => {
       const client = await ClientsServices.deleteClient('1');
 
       expect(client).toEqual(Error("Client doesn't exists."));
     });
 
-    it('should not be able to update a client with invalid id format.', async () => {
+    it('should not be able to delete a client with invalid id format.', async () => {
       const client = await ClientsServices.deleteClient('a');
 
       expect(client).toEqual(Error('Invalid ID format, use a integer number.'));

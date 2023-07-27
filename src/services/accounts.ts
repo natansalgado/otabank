@@ -46,6 +46,9 @@ const addAmount = async (
   number: string,
   value: number,
 ): Promise<Account | Error> => {
+  if (!Number.isInteger(Number(number)))
+    return new Error('The account number need to be a integer number.');
+
   const accountExists = await AccountsRepository.findOne({ where: { number } });
 
   if (!accountExists) return new Error("Account doesn't exists.");

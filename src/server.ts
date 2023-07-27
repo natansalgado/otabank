@@ -12,16 +12,16 @@ app.use('/accounts', AccountsRoutes);
 
 try {
   db.sync();
-  console.log('--------------------------------');
-  console.log(`- Database connected: ${process.env.DB_NAME} -`);
+  console.log(`--------------------------------
+- Database connected: ${process.env.DB_NAME} -`);
 } catch (err) {
   console.log(err);
 }
 
 const PORT = process.env.PORT || 3000;
 export const server = app.listen(PORT, () => {
-  console.log(`- Server running on port ${PORT}. -`);
-  console.log('--------------------------------');
+  console.log(`- Server running on port ${PORT}. -
+--------------------------------`);
 });
 
 export default app;
