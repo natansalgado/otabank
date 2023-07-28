@@ -1,6 +1,7 @@
 import express from 'express';
 import ClientsRoutes from './routes/clients';
 import AccountsRoutes from './routes/accounts';
+import TransactionsRoutes from './routes/transactions';
 import db from './db';
 
 const app = express();
@@ -9,6 +10,7 @@ app.use(express.json());
 
 app.use('/clients', ClientsRoutes);
 app.use('/accounts', AccountsRoutes);
+app.use('/transactions', TransactionsRoutes);
 
 try {
   db.sync();

@@ -1,11 +1,13 @@
-import Client, { Client as ClientInfos } from './src/models/clients'; // Importe o modelo do seu cliente aqui
-import db from './src/db';
+import Client, { Client as ClientInfos } from './src/models/clients';
 import Account, { Account as AccountInfos } from './src/models/accounts';
+import Transaction from './src/models/transactions';
+import db from './src/db';
 
 let clientsBackup: ClientInfos[];
 let accountsBackup: AccountInfos[];
 
 beforeAll(async () => {
+
   await db.sync();
   const accounts = await Account.findAll();
   const clients = await Client.findAll();
@@ -14,6 +16,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await Transaction.drop();
   await Account.drop();
   await Client.destroy({ truncate: true, restartIdentity: true });
 });
@@ -23,4 +26,5 @@ afterAll(async () => {
   await Client.bulkCreate(clientsBackup);
   await Account.sync();
   await Account.bulkCreate(accountsBackup);
+  await Transaction.sync();
 });

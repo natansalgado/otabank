@@ -1,8 +1,6 @@
 import AccountsRepository, { Account } from '../models/accounts';
 import ClientsRepository from '../models/clients';
 
-type AccountInfos = Pick<Account, 'number' | 'clientId' | 'balance'>;
-
 const findAll = async (): Promise<Account[]> => {
   const accounts = await AccountsRepository.findAll();
 
