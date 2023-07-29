@@ -7,18 +7,18 @@ type TransactionInfos = Pick<
   'accountId' | 'type' | 'accountToId' | 'value'
 >;
 
-type Infos = {
-  account: string;
-  type: 'transfer' | 'withdraw' | 'deposit' | 'balance';
-  toAccount: string;
-  value: string;
+export type Infos = {
+  account: string | number;
+  type: string;
+  toAccount?: string | number;
+  value?: string | number;
 };
 
 const errorMessages = {
   invalidIdFormat: 'Invalid ID format, use a integer number.',
-  transactionNotExists: "Account doesn't exists.",
+  transactionNotExists: "Transaction doesn't exists.",
   invalidAccountNumber: 'The account number needs to be an integer number.',
-  accountNotExists: "Account doesn't exist.",
+  accountNotExists: "Account doesn't exists.",
   transferRequiresAccountToId:
     "To make a transfer, the target account number needs to be declared with 'toAccount'.",
   invalidTargetAccountNumber:
@@ -48,33 +48,33 @@ const findTransaction = async (id: string): Promise<Transaction | Error> => {
 
 const addTransaction = async (infos: Infos): Promise<Transaction | Error> => {
   if (!Number.isInteger(Number(infos.account)))
-    return new Error(errorMessages.invalidAccountNumber);
+    return new Error(errorMessages.invalidAccountNumber); //--------------------------------------------------------------
+
+  const validTypes = ['balance', 'transfer', 'withdraw', 'deposit'];
+
+  if (!validTypes.includes(infos.type)) {
+    return new Error(errorMessages.invalidTransactionType); //------------------------------------------------------------
+  }
 
   const accountId = await AccountsRepository.findOne({
     where: { number: infos.account },
   });
-  if (!accountId) return new Error(errorMessages.accountNotExists);
+  if (!accountId) return new Error(errorMessages.accountNotExists); //----------------------------------------------------
 
   let accountToId = null;
 
   if (infos.type === 'transfer') {
     if (!infos.toAccount) {
-      return new Error(errorMessages.transferRequiresAccountToId);
+      return new Error(errorMessages.transferRequiresAccountToId); //-----------------------------------------------------
     }
 
     if (!Number.isInteger(Number(infos.toAccount)))
-      return new Error(errorMessages.invalidTargetAccountNumber);
+      return new Error(errorMessages.invalidTargetAccountNumber); //------------------------------------------------------
 
     accountToId = await AccountsRepository.findOne({
       where: { number: infos.toAccount },
     });
-    if (!accountToId) return new Error(errorMessages.targetAccountNotExists);
-  }
-
-  const validTypes = ['balance', 'transfer', 'withdraw', 'deposit'];
-
-  if (!validTypes.includes(infos.type)) {
-    return new Error(errorMessages.invalidTransactionType);
+    if (!accountToId) return new Error(errorMessages.targetAccountNotExists); //-------------------------------------------
   }
 
   const transaction: TransactionInfos = {

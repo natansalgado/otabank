@@ -1,30 +1,40 @@
 import Client, { Client as ClientInfos } from './src/models/clients';
 import Account, { Account as AccountInfos } from './src/models/accounts';
-import Transaction from './src/models/transactions';
+import Transaction, {
+  Transaction as TransactionsInfos,
+} from './src/models/transactions';
 import db from './src/db';
+import { server } from './src/server';
 
 let clientsBackup: ClientInfos[];
 let accountsBackup: AccountInfos[];
+let transactionsBackup: TransactionsInfos[];
 
 beforeAll(async () => {
-
-  await db.sync();
-  const accounts = await Account.findAll();
-  const clients = await Client.findAll();
-  accountsBackup = accounts.map((account) => account.toJSON());
-  clientsBackup = clients.map((client) => client.toJSON());
+  await db.sync().then(async () => {
+    const transactions = await Transaction.findAll();
+    const accounts = await Account.findAll();
+    const clients = await Client.findAll();
+    transactionsBackup = transactions.map((transaction) =>
+      transaction.toJSON(),
+    );
+    accountsBackup = accounts.map((account) => account.toJSON());
+    clientsBackup = clients.map((client) => client.toJSON());
+  });
 });
 
 beforeEach(async () => {
-  await Transaction.drop();
-  await Account.drop();
-  await Client.destroy({ truncate: true, restartIdentity: true });
+  await db.drop().then(async () => await db.sync());
 });
 
 afterAll(async () => {
-  await Client.destroy({ truncate: true, restartIdentity: true });
-  await Client.bulkCreate(clientsBackup);
-  await Account.sync();
-  await Account.bulkCreate(accountsBackup);
-  await Transaction.sync();
+  await db
+    .drop()
+    .then(async () => await db.sync())
+    .then(async () => {
+      await Client.bulkCreate(clientsBackup);
+      await Account.bulkCreate(accountsBackup);
+      await Transaction.bulkCreate(transactionsBackup);
+    });
+  server.close();
 });

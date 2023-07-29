@@ -10,10 +10,6 @@ describe('Clients Controller', () => {
     address: 'Test Street, 123',
   };
 
-  afterAll((done) => {
-    server.close(done);
-  });
-
   describe('Find All the clients', () => {
     it('should be able to return all the clients.', async () => {
       await request(app).get('/clients').expect(200);

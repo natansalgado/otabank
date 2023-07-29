@@ -15,18 +15,6 @@ describe('Accounts Services', () => {
     clientId: '1',
   };
 
-  afterAll((done) => {
-    server.close(done);
-  });
-
-  beforeEach(async () => {
-    await Accounts.sync();
-  });
-
-  afterEach(async () => {
-    await Accounts.drop();
-  });
-
   describe('Find All the accounts', () => {
     it('should be able to return all the accounts.', async () => {
       await request(app).get('/accounts').expect(200);

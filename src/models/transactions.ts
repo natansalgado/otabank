@@ -16,7 +16,7 @@ export class Transaction extends Model<
   declare id: CreationOptional<number>;
   declare accountId: number;
   declare accountToId?: CreationOptional<number>;
-  declare type: 'transfer' | 'withdraw' | 'deposit' | 'balance';
+  declare type: string;
   declare value: number;
   declare createdAt: CreationOptional<Date>;
 }
@@ -41,7 +41,7 @@ export default Transaction.init(
     accountToId: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      
+
       references: {
         model: Account,
         key: 'id',

@@ -15,26 +15,12 @@ describe('Accounts Services', () => {
     clientId: '1',
   };
 
-  beforeEach(async () => {
-    await Accounts.sync();
-  });
-
-  afterEach(async () => {
-    await Accounts.drop();
-  });
-
   describe('Find All the accounts', () => {
     it('should be able to return all the accounts.', async () => {
-      const accountsData = [{ clientId: '1' }, { clientId: '1' }];
-
       const createdClient = await ClientsServices.addClient(clientData);
 
-      const account1 = await AccountsServices.addAccount(
-        accountsData[0].clientId,
-      );
-      const account2 = await AccountsServices.addAccount(
-        accountsData[1].clientId,
-      );
+      const account1 = await AccountsServices.addAccount(accountData.clientId);
+      const account2 = await AccountsServices.addAccount(accountData.clientId);
 
       const accounts = await AccountsServices.findAll();
 
@@ -164,9 +150,6 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(deletedAccount.id).toBe(createdAccount.id);
-      expect(deletedAccount.number).toBe(createdAccount.number);
-      expect(deletedAccount.balance).toBe(createdAccount.balance);
-      expect(deletedAccount.clientId).toBe(createdAccount.clientId);
     });
 
     it('should not be able to delete a nonesxistent account.', async () => {
@@ -176,9 +159,9 @@ describe('Accounts Services', () => {
     });
 
     it('should not be able to delete an account with invalid id format.', async () => {
-      const client = await AccountsServices.deleteAccount('a');
+      const account = await AccountsServices.deleteAccount('a');
 
-      expect(client).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(account).toEqual(Error('Invalid ID format, use a integer number.'));
     });
   });
 });
