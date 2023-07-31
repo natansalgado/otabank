@@ -8,8 +8,7 @@ const findAll = async (): Promise<Account[]> => {
 };
 
 const findAccount = async (id: string): Promise<Account | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const account = await AccountsRepository.findByPk(id);
 
@@ -19,8 +18,7 @@ const findAccount = async (id: string): Promise<Account | Error> => {
 };
 
 const addAccount = async (id: string): Promise<Account | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const clientExists = await ClientsRepository.findByPk(id);
 
@@ -40,21 +38,14 @@ const addAccount = async (id: string): Promise<Account | Error> => {
   return account;
 };
 
-const addAmount = async (
-  number: string,
-  value: number,
-): Promise<Account | Error> => {
-  if (!Number.isInteger(Number(number)))
-    return new Error('The account number need to be a integer number.');
+const addAmount = async (number: string, value: number): Promise<Account | Error> => {
+  if (!Number.isInteger(Number(number))) return new Error('The account number need to be a integer number.');
 
   const accountExists = await AccountsRepository.findOne({ where: { number } });
 
   if (!accountExists) return new Error("Account doesn't exists.");
 
-  await AccountsRepository.update(
-    { balance: Number(accountExists.balance) + value },
-    { where: { number: number } },
-  );
+  await AccountsRepository.update({ balance: Number(accountExists.balance) + value }, { where: { number: number } });
 
   const account = await AccountsRepository.findOne({ where: { number } });
   if (account) return account;
@@ -63,8 +54,7 @@ const addAmount = async (
 };
 
 const deleteAccount = async (id: string): Promise<Account | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const accountExists = await AccountsRepository.findByPk(id);
 

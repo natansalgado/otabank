@@ -1,9 +1,6 @@
 import ClientRepository, { Client } from '../models/clients';
 
-type ClientInfos = Pick<
-  Client,
-  'name' | 'email' | 'number' | 'address' | 'password'
->;
+type ClientInfos = Pick<Client, 'name' | 'email' | 'number' | 'address' | 'password'>;
 
 const findAll = async (): Promise<Client[]> => {
   const repo = await ClientRepository.findAll();
@@ -11,8 +8,7 @@ const findAll = async (): Promise<Client[]> => {
 };
 
 const findClient = async (id: string): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const repo = await ClientRepository.findByPk(id);
 
@@ -25,14 +21,7 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
     where: { email: client.email },
   });
 
-  if (
-    !client.name ||
-    !client.email ||
-    !client.address ||
-    !client.number ||
-    !client.password
-  )
-    return new Error('Invalid camp');
+  if (!client.name || !client.email || !client.address || !client.number || !client.password) return new Error('Invalid camp');
 
   if (emailExists) return new Error('Email already exists.');
 
@@ -41,12 +30,8 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
   return repo;
 };
 
-const updateClient = async (
-  id: string,
-  client: Partial<ClientInfos>,
-): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+const updateClient = async (id: string, client: Partial<ClientInfos>): Promise<Client | Error> => {
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const updateClient: Partial<ClientInfos> = {
     name: client.name !== '' ? client.name : undefined,
@@ -67,8 +52,7 @@ const updateClient = async (
 };
 
 const deleteClient = async (id: string): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id)))
-    return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
   const repo = await ClientRepository.findByPk(id);
 

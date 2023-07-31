@@ -1,18 +1,8 @@
-import {
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-  DataTypes,
-  Deferrable,
-} from 'sequelize';
+import { Model, InferAttributes, InferCreationAttributes, CreationOptional, DataTypes, Deferrable } from 'sequelize';
 import db from '../db';
 import Account from './accounts';
 
-export class Transaction extends Model<
-  InferAttributes<Transaction>,
-  InferCreationAttributes<Transaction>
-> {
+export class Transaction extends Model<InferAttributes<Transaction>, InferCreationAttributes<Transaction>> {
   declare id: CreationOptional<number>;
   declare accountId: number;
   declare accountToId?: CreationOptional<number>;
@@ -55,13 +45,8 @@ export default Transaction.init(
       validate: {
         isIn: [['transfer', 'withdraw', 'deposit', 'balance']],
         accountToIdRequired(value: string) {
-          if (
-            this.type === 'transfer' &&
-            (value === undefined || value === null)
-          ) {
-            throw new Error(
-              'To make a transfer the accountToId need to be declared.',
-            );
+          if (this.type === 'transfer' && (value === undefined || value === null)) {
+            throw new Error('To make a transfer the accountToId need to be declared.');
           }
         },
       },

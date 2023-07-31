@@ -1,8 +1,6 @@
 import Client, { Client as ClientInfos } from './src/models/clients';
 import Account, { Account as AccountInfos } from './src/models/accounts';
-import Transaction, {
-  Transaction as TransactionsInfos,
-} from './src/models/transactions';
+import Transaction, { Transaction as TransactionsInfos } from './src/models/transactions';
 import db from './src/db';
 import { server } from './src/server';
 
@@ -15,9 +13,7 @@ beforeAll(async () => {
     const transactions = await Transaction.findAll();
     const accounts = await Account.findAll();
     const clients = await Client.findAll();
-    transactionsBackup = transactions.map((transaction) =>
-      transaction.toJSON(),
-    );
+    transactionsBackup = transactions.map((transaction) => transaction.toJSON());
     accountsBackup = accounts.map((account) => account.toJSON());
     clientsBackup = clients.map((client) => client.toJSON());
   });

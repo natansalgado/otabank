@@ -88,8 +88,7 @@ describe('Clients Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const updatedClient = await ClientsServices.updateClient('1', updateData);
 
-      if (updatedClient instanceof Error)
-        return expect(createdClient).toHaveProperty('AllRight');
+      if (updatedClient instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
 
       expect(createdClient).toHaveProperty('id');
       expect(updatedClient).toHaveProperty('id');
@@ -118,8 +117,7 @@ describe('Clients Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const deletedClient = await ClientsServices.deleteClient('1');
 
-      if (deletedClient instanceof Error)
-        return expect(createdClient).toHaveProperty('AllRight');
+      if (deletedClient instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
 
       expect(createdClient).toHaveProperty('id');
       expect(deletedClient).toHaveProperty('id');

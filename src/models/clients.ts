@@ -1,16 +1,7 @@
-import {
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-  DataTypes,
-} from 'sequelize';
+import { Model, InferAttributes, InferCreationAttributes, CreationOptional, DataTypes } from 'sequelize';
 import db from '../db';
 
-export class Client extends Model<
-  InferAttributes<Client>,
-  InferCreationAttributes<Client>
-> {
+export class Client extends Model<InferAttributes<Client>, InferCreationAttributes<Client>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare email: string;
