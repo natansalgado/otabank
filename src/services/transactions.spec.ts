@@ -46,18 +46,10 @@ describe('Accounts Services', () => {
         },
       ];
 
-      const deposited = await TransactionsServices.addTransaction(
-        transactionsData[0],
-      );
-      const transfered = await TransactionsServices.addTransaction(
-        transactionsData[1],
-      );
-      const withdrawn = await TransactionsServices.addTransaction(
-        transactionsData[2],
-      );
-      const balance = await TransactionsServices.addTransaction(
-        transactionsData[3],
-      );
+      const deposited = await TransactionsServices.addTransaction(transactionsData[0]);
+      const transfered = await TransactionsServices.addTransaction(transactionsData[1]);
+      const withdrawn = await TransactionsServices.addTransaction(transactionsData[2]);
+      const balance = await TransactionsServices.addTransaction(transactionsData[3]);
 
       const transactions = await TransactionsServices.findAll();
 
@@ -77,9 +69,7 @@ describe('Accounts Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
 
-      const createdTransaction = await TransactionsServices.addTransaction(
-        transactionData((createdAccount as Account).number),
-      );
+      const createdTransaction = await TransactionsServices.addTransaction(transactionData((createdAccount as Account).number));
 
       const transaction = await TransactionsServices.findTransaction('1');
 
@@ -101,9 +91,7 @@ describe('Accounts Services', () => {
       const transaction = await TransactionsServices.findTransaction('a');
 
       expect(transaction).not.toHaveProperty('id');
-      expect(transaction).toEqual(
-        Error('Invalid ID format, use a integer number.'),
-      );
+      expect(transaction).toEqual(Error('Invalid ID format, use a integer number.'));
     });
   });
 
@@ -112,9 +100,7 @@ describe('Accounts Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
 
-      const transaction = await TransactionsServices.addTransaction(
-        transactionData((createdAccount as Account).number),
-      );
+      const transaction = await TransactionsServices.addTransaction(transactionData((createdAccount as Account).number));
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -124,23 +110,17 @@ describe('Accounts Services', () => {
     });
 
     it('should not be able to create a transaction with a nonesxistent account', async () => {
-      const transfer = await TransactionsServices.addTransaction(
-        transactionData(1),
-      );
+      const transfer = await TransactionsServices.addTransaction(transactionData(1));
 
       expect(transfer).not.toHaveProperty('id');
       expect(transfer).toEqual(Error("Account doesn't exists."));
     });
 
     it('should not be able to create a transaction with invalid account number format.', async () => {
-      const transfer = await TransactionsServices.addTransaction(
-        transactionData('a'),
-      );
+      const transfer = await TransactionsServices.addTransaction(transactionData('a'));
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(
-        Error('The account number needs to be an integer number.'),
-      );
+      expect(transfer).toEqual(Error('The account number needs to be an integer number.'));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
@@ -150,11 +130,7 @@ describe('Accounts Services', () => {
       });
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(
-        Error(
-          "The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'",
-        ),
-      );
+      expect(transfer).toEqual(Error("The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'"));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {
@@ -168,11 +144,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(
-        Error(
-          "To make a transfer, the target account number needs to be declared with 'toAccount'.",
-        ),
-      );
+      expect(transfer).toEqual(Error("To make a transfer, the target account number needs to be declared with 'toAccount'."));
     });
 
     it('should not be able to create a transfer transaction with an invalid account target number.', async () => {
@@ -187,9 +159,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(
-        Error('The Target account number needs to be an integer number.'),
-      );
+      expect(transfer).toEqual(Error('The Target account number needs to be an integer number.'));
     });
 
     it('should not be able to create a transfer transaction with a nonexistent account target number.', async () => {
@@ -248,9 +218,7 @@ describe('Accounts Services', () => {
         type: 'balance',
       });
 
-      const deletedTransaction = await TransactionsServices.deleteTransaction(
-        '1',
-      );
+      const deletedTransaction = await TransactionsServices.deleteTransaction('1');
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -268,9 +236,7 @@ describe('Accounts Services', () => {
     it('should not be able to delete an transaction with invalid id format.', async () => {
       const transaction = await TransactionsServices.deleteTransaction('a');
 
-      expect(transaction).toEqual(
-        Error('Invalid ID format, use a integer number.'),
-      );
+      expect(transaction).toEqual(Error('Invalid ID format, use a integer number.'));
     });
   });
 });

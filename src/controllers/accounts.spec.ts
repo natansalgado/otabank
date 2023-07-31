@@ -1,5 +1,4 @@
-import Accounts from '../models/accounts';
-import app, { server } from '../server';
+import app from '../server';
 import request from 'supertest';
 
 describe('Accounts Services', () => {
@@ -39,9 +38,7 @@ describe('Accounts Services', () => {
       await request(app)
         .get('/accounts/a')
         .expect(404)
-        .then((res) =>
-          expect(res.body).toBe('Invalid ID format, use a integer number.'),
-        );
+        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
     });
   });
 
@@ -64,9 +61,7 @@ describe('Accounts Services', () => {
         .post('/accounts')
         .send({ clientId: 'a' })
         .expect(404)
-        .then((res) =>
-          expect(res.body).toBe('Invalid ID format, use a integer number.'),
-        );
+        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
     });
   });
 
@@ -79,10 +74,7 @@ describe('Accounts Services', () => {
         .send(accountData)
         .expect(200)
         .then((res) => (number = res.body.number));
-      await request(app)
-        .patch('/accounts')
-        .send({ number, value: 100 })
-        .expect(200);
+      await request(app).patch('/accounts').send({ number, value: 100 }).expect(200);
     });
 
     it('should not be able to add value to a nonesxistent number account.', async () => {
@@ -98,11 +90,7 @@ describe('Accounts Services', () => {
         .patch('/accounts')
         .send({ number: 'a', value: 100 })
         .expect(404)
-        .then((res) =>
-          expect(res.body).toBe(
-            'The account number need to be a integer number.',
-          ),
-        );
+        .then((res) => expect(res.body).toBe('The account number need to be a integer number.'));
     });
   });
 
@@ -126,9 +114,7 @@ describe('Accounts Services', () => {
         .delete('/accounts/a')
         .send(accountData)
         .expect(404)
-        .then((res) =>
-          expect(res.body).toBe('Invalid ID format, use a integer number.'),
-        );
+        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
     });
   });
 });
