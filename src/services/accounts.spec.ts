@@ -84,39 +84,6 @@ describe('Accounts Services', () => {
     });
   });
 
-  describe('Add a value to Account', () => {
-    it('should be able to add a value to an account.', async () => {
-      const valueToAdd = 100;
-      const createdClient = await ClientsServices.addClient(clientData);
-      const createdAccount = await AccountsServices.addAccount(accountData.clientId);
-
-      if (createdAccount instanceof Error) return;
-
-      const addedValue = await AccountsServices.addAmount(String(createdAccount.number), valueToAdd);
-
-      if (addedValue instanceof Error) return expect(addedValue.message).toBe('All right.');
-
-      expect(createdClient).toHaveProperty('id');
-      expect(createdAccount).toHaveProperty('id');
-      expect(addedValue).toHaveProperty('id');
-      expect(addedValue.balance).toBe(valueToAdd + '.00');
-    });
-
-    it('should not be able to add value to a nonesxistent number account.', async () => {
-      const account = await AccountsServices.addAmount('123456789', 100);
-
-      expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error("Account doesn't exists."));
-    });
-
-    it('should not be able to add value to an account with invalid id format.', async () => {
-      const account = await AccountsServices.addAmount('a131', 100);
-
-      expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error('The account number need to be a integer number.'));
-    });
-  });
-
   describe('Delete an account', () => {
     it('should be able to delete an account', async () => {
       const createdClient = await ClientsServices.addClient(clientData);

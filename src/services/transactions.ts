@@ -21,6 +21,8 @@ const errorMessages = {
   targetAccountNotExists: "Target account doesn't exist.",
   invalidTransactionType: "The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'",
   insufficientFunds: 'Insufficient funds.',
+  negativeValue: 'The value needs to be a positive number.',
+  valueIsNaN: 'The value needs to be only number.',
 };
 
 const findAll = async (): Promise<Transaction[]> => {
@@ -40,13 +42,12 @@ const findTransaction = async (id: string): Promise<Transaction | Error> => {
 };
 
 const addTransaction = async (infos: Infos): Promise<Transaction | Error> => {
-  if (!Number.isInteger(Number(infos.account))) return new Error(errorMessages.invalidAccountNumber);
-
   const validTypes = ['balance', 'transfer', 'withdraw', 'deposit'];
 
-  if (!validTypes.includes(infos.type)) {
-    return new Error(errorMessages.invalidTransactionType);
-  }
+  if (!Number.isInteger(Number(infos.account))) return new Error(errorMessages.invalidAccountNumber);
+  if (!validTypes.includes(infos.type)) return new Error(errorMessages.invalidTransactionType);
+  if (infos.value && isNaN(Number(infos.value))) return new Error(errorMessages.valueIsNaN);
+  if (infos.value && Number(infos.value) < 0) return new Error(errorMessages.negativeValue);
 
   const accountId = await AccountsRepository.findOne({
     where: { number: infos.account },
@@ -56,10 +57,7 @@ const addTransaction = async (infos: Infos): Promise<Transaction | Error> => {
   let accountToId = null;
 
   if (infos.type === 'transfer') {
-    if (!infos.toAccount) {
-      return new Error(errorMessages.transferRequiresAccountToId);
-    }
-
+    if (!infos.toAccount) return new Error(errorMessages.transferRequiresAccountToId);
     if (!Number.isInteger(Number(infos.toAccount))) return new Error(errorMessages.invalidTargetAccountNumber);
 
     accountToId = await AccountsRepository.findOne({
@@ -77,6 +75,7 @@ const addTransaction = async (infos: Infos): Promise<Transaction | Error> => {
 
   switch (infos.type) {
     case 'balance':
+      transaction.value = accountId.balance;
       break;
     case 'transfer':
       if (accountId.balance < Number(infos.value)) return new Error(errorMessages.insufficientFunds);
@@ -98,17 +97,11 @@ const addTransaction = async (infos: Infos): Promise<Transaction | Error> => {
 };
 
 const performTransaction = async (sourceAccount: Account, targetAccount: Account | null, amount: number) => {
-  await sequelize.transaction(async (t) => {
-    await AccountsRepository.update(
-      { balance: sourceAccount.balance - amount },
-      { where: { id: sourceAccount.id }, transaction: t },
-    );
+  await sequelize.transaction(async () => {
+    await AccountsRepository.update({ balance: sourceAccount.balance - amount }, { where: { id: sourceAccount.id } });
 
     if (targetAccount) {
-      await AccountsRepository.update(
-        { balance: targetAccount.balance + amount },
-        { where: { id: targetAccount.id }, transaction: t },
-      );
+      await AccountsRepository.update({ balance: targetAccount.balance - -amount }, { where: { id: targetAccount.id } });
     }
   });
 };

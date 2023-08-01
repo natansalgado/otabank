@@ -6,7 +6,6 @@ const routes = Router();
 routes.get('/', accounts.findAll);
 routes.get('/:id', accounts.findAccount);
 routes.post('/', accounts.addAccount);
-routes.patch('/', accounts.addAmount);
 routes.delete('/:id', accounts.deleteAccount);
 
 export default routes;

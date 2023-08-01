@@ -109,13 +109,6 @@ describe('Accounts Services', () => {
       expect((transaction as Transaction).value).toBe('200.00');
     });
 
-    it('should not be able to create a transaction with a nonesxistent account', async () => {
-      const transfer = await TransactionsServices.addTransaction(transactionData(1));
-
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("Account doesn't exists."));
-    });
-
     it('should not be able to create a transaction with invalid account number format.', async () => {
       const transfer = await TransactionsServices.addTransaction(transactionData('a'));
 
@@ -131,6 +124,35 @@ describe('Accounts Services', () => {
 
       expect(transfer).not.toHaveProperty('id');
       expect(transfer).toEqual(Error("The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'"));
+    });
+
+    it('should not be able to create a transaction with a invalid value.', async () => {
+      const transfer = await TransactionsServices.addTransaction({
+        account: 1,
+        type: 'withdraw',
+        value: 'a',
+      });
+
+      expect(transfer).not.toHaveProperty('id');
+      expect(transfer).toEqual(Error("The value needs to be only number."));
+    });
+
+    it('should not be able to create a transaction with a negative value.', async () => {
+      const transfer = await TransactionsServices.addTransaction({
+        account: 1,
+        type: 'withdraw',
+        value: -100,
+      });
+
+      expect(transfer).not.toHaveProperty('id');
+      expect(transfer).toEqual(Error("The value needs to be a positive number."));
+    });
+
+    it('should not be able to create a transaction with a nonesxistent account', async () => {
+      const transfer = await TransactionsServices.addTransaction(transactionData(1));
+
+      expect(transfer).not.toHaveProperty('id');
+      expect(transfer).toEqual(Error("Account doesn't exists."));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {

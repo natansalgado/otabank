@@ -38,21 +38,6 @@ const addAccount = async (id: string): Promise<Account | Error> => {
   return account;
 };
 
-const addAmount = async (number: string, value: number): Promise<Account | Error> => {
-  if (!Number.isInteger(Number(number))) return new Error('The account number need to be a integer number.');
-
-  const accountExists = await AccountsRepository.findOne({ where: { number } });
-
-  if (!accountExists) return new Error("Account doesn't exists.");
-
-  await AccountsRepository.update({ balance: Number(accountExists.balance) + value }, { where: { number: number } });
-
-  const account = await AccountsRepository.findOne({ where: { number } });
-  if (account) return account;
-
-  return new Error('');
-};
-
 const deleteAccount = async (id: string): Promise<Account | Error> => {
   if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
 
@@ -65,4 +50,4 @@ const deleteAccount = async (id: string): Promise<Account | Error> => {
   return accountExists;
 };
 
-export default { findAll, findAccount, addAccount, addAmount, deleteAccount };
+export default { findAll, findAccount, addAccount, deleteAccount };

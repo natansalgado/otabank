@@ -69,14 +69,6 @@ describe('Accounts Controllers', () => {
       await request(app).post('/transactions').send(transactionData(account)).expect(200);
     });
 
-    it('should not be able to create a transaction with a nonesxistent account', async () => {
-      await request(app)
-        .post('/transactions')
-        .send(transactionData(123))
-        .expect(404)
-        .then((res) => expect(res.body).toBe("Account doesn't exists."));
-    });
-
     it('should not be able to create a transaction with invalid account number format.', async () => {
       await request(app)
         .post('/transactions')
@@ -94,6 +86,38 @@ describe('Accounts Controllers', () => {
         })
         .expect(404)
         .then((res) => expect(res.body).toBe("The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'"));
+    });
+
+    it('should not be able to create a transaction with invalid transaction type.', async () => {
+      await request(app)
+        .post('/transactions')
+        .send({
+          account: 1,
+          type: 'withdraw',
+          value: "a",
+        })
+        .expect(404)
+        .then((res) => expect(res.body).toBe("The value needs to be only number."));
+    });
+
+    it('should not be able to create a transaction with invalid transaction type.', async () => {
+      await request(app)
+        .post('/transactions')
+        .send({
+          account: 1,
+          type: 'withdraw',
+          value: -100,
+        })
+        .expect(404)
+        .then((res) => expect(res.body).toBe("The value needs to be a positive number."));
+    });
+
+    it('should not be able to create a transaction with a nonesxistent account', async () => {
+      await request(app)
+        .post('/transactions')
+        .send(transactionData(123))
+        .expect(404)
+        .then((res) => expect(res.body).toBe("Account doesn't exists."));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {

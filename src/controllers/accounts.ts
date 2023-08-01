@@ -26,16 +26,6 @@ const addAccount = async (req: Request, res: Response) => {
   return res.json(result);
 };
 
-const addAmount = async (req: Request, res: Response) => {
-  const { number, value } = req.body;
-
-  const result = await AccountsServices.addAmount(number, value);
-
-  if (result instanceof Error) return res.status(404).json(result.message);
-
-  return res.json(result);
-};
-
 const deleteAccount = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -46,4 +36,4 @@ const deleteAccount = async (req: Request, res: Response) => {
   return res.json(result);
 };
 
-export default { findAll, findAccount, addAccount, addAmount, deleteAccount };
+export default { findAll, findAccount, addAccount, deleteAccount };
