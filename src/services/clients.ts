@@ -1,4 +1,5 @@
 import ClientRepository, { Client } from '../models/clients';
+import bcrypto from 'bcrypt';
 
 type ClientInfos = Pick<Client, 'name' | 'email' | 'number' | 'address' | 'password'>;
 
@@ -24,6 +25,9 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
   if (!client.name || !client.email || !client.address || !client.number || !client.password) return new Error('Invalid camp');
 
   if (emailExists) return new Error('Email already exists.');
+
+  const hash = await bcrypto.hash(client.password, 10);
+  client.password = hash;
 
   const repo = await ClientRepository.create(client);
 

@@ -41,7 +41,7 @@ export default Client.init(
       allowNull: false,
     },
     password: {
-      type: new DataTypes.STRING(64),
+      type: new DataTypes.STRING(60),
       allowNull: false,
     },
     createdAt: DataTypes.DATE,
