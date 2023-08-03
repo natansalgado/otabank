@@ -3,6 +3,7 @@ import AccountsServices from './accounts';
 import ClientsServices from './clients';
 import { Transaction } from '../models/transactions';
 import { Account } from '../models/accounts';
+import { errorMessages } from '../errorMessages';
 
 describe('Accounts Services', () => {
   const clientData = {
@@ -84,14 +85,14 @@ describe('Accounts Services', () => {
       const transaction = await TransactionsServices.findTransaction('1');
 
       expect(transaction).not.toHaveProperty('id');
-      expect(transaction).toEqual(Error("Transaction doesn't exists."));
+      expect(transaction).toEqual(Error(errorMessages.transactionNotExists));
     });
 
     it('should not be able to return an transaction with invalid id format.', async () => {
       const transaction = await TransactionsServices.findTransaction('a');
 
       expect(transaction).not.toHaveProperty('id');
-      expect(transaction).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(transaction).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 
@@ -113,7 +114,7 @@ describe('Accounts Services', () => {
       const transfer = await TransactionsServices.addTransaction(transactionData('a'));
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error('The account number needs to be an integer number.'));
+      expect(transfer).toEqual(Error(errorMessages.invalidAccountNumber));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
@@ -123,7 +124,7 @@ describe('Accounts Services', () => {
       });
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'"));
+      expect(transfer).toEqual(Error(errorMessages.invalidTransactionType));
     });
 
     it('should not be able to create a transaction with a invalid value.', async () => {
@@ -134,7 +135,7 @@ describe('Accounts Services', () => {
       });
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("The value needs to be only number."));
+      expect(transfer).toEqual(Error(errorMessages.valueIsNaN));
     });
 
     it('should not be able to create a transaction with a negative value.', async () => {
@@ -145,14 +146,14 @@ describe('Accounts Services', () => {
       });
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("The value needs to be a positive number."));
+      expect(transfer).toEqual(Error(errorMessages.negativeValue));
     });
 
     it('should not be able to create a transaction with a nonesxistent account', async () => {
       const transfer = await TransactionsServices.addTransaction(transactionData(1));
 
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("Account doesn't exists."));
+      expect(transfer).toEqual(Error(errorMessages.accountNotExists));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {
@@ -166,7 +167,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("To make a transfer, the target account number needs to be declared with 'toAccount'."));
+      expect(transfer).toEqual(Error(errorMessages.transferRequiresAccountToId));
     });
 
     it('should not be able to create a transfer transaction with an invalid account target number.', async () => {
@@ -181,7 +182,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error('The Target account number needs to be an integer number.'));
+      expect(transfer).toEqual(Error(errorMessages.invalidTargetAccountNumber));
     });
 
     it('should not be able to create a transfer transaction with a nonexistent account target number.', async () => {
@@ -196,7 +197,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error("Target account doesn't exist."));
+      expect(transfer).toEqual(Error(errorMessages.targetAccountNotExists));
     });
 
     it('should not be able to create a transfer transaction with insufficient founds.', async () => {
@@ -212,7 +213,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error('Insufficient funds.'));
+      expect(transfer).toEqual(Error(errorMessages.insufficientFunds));
     });
 
     it('should not be able to create a withdraw transaction with insufficient founds.', async () => {
@@ -227,7 +228,7 @@ describe('Accounts Services', () => {
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
       expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error('Insufficient funds.'));
+      expect(transfer).toEqual(Error(errorMessages.insufficientFunds));
     });
   });
 
@@ -252,13 +253,13 @@ describe('Accounts Services', () => {
       const transaction = await TransactionsServices.deleteTransaction('1');
 
       expect(transaction).not.toHaveProperty('id');
-      expect(transaction).toEqual(Error("Transaction doesn't exists."));
+      expect(transaction).toEqual(Error(errorMessages.transactionNotExists));
     });
 
     it('should not be able to delete an transaction with invalid id format.', async () => {
       const transaction = await TransactionsServices.deleteTransaction('a');
 
-      expect(transaction).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(transaction).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 });

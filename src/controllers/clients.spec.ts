@@ -1,3 +1,4 @@
+import { errorMessages } from '../errorMessages';
 import app from '../server';
 import request from 'supertest';
 
@@ -23,11 +24,17 @@ describe('Clients Controller', () => {
     });
 
     it('should not be able to return a nonesxistent client.', async () => {
-      await request(app).get('/clients/1').expect(404);
+      await request(app)
+        .get('/clients/1')
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.clientNotExists));
     });
 
     it('should not be able to return a client with invalid id format.', async () => {
-      await request(app).get('/clients/a').expect(404);
+      await request(app)
+        .get('/clients/a')
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 
@@ -38,7 +45,11 @@ describe('Clients Controller', () => {
 
     it('should not be able to create an existing client.', async () => {
       await request(app).post('/clients').send(clientData).expect(200);
-      await request(app).post('/clients').send(clientData).expect(400);
+      await request(app)
+        .post('/clients')
+        .send(clientData)
+        .expect(400)
+        .then((res) => expect(res.body).toBe(errorMessages.emailAlreadyExists));
     });
   });
 
@@ -56,11 +67,19 @@ describe('Clients Controller', () => {
     });
 
     it('should not be able to update a nonesxistent client infos.', async () => {
-      await request(app).patch('/clients/1').send({}).expect(404);
+      await request(app)
+        .patch('/clients/1')
+        .send({})
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.clientNotExists));
     });
 
     it('should not be able to update a client with invalid id format.', async () => {
-      await request(app).patch('/clients/a').send({}).expect(404);
+      await request(app)
+        .patch('/clients/a')
+        .send({})
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 
@@ -70,12 +89,20 @@ describe('Clients Controller', () => {
       await request(app).delete('/clients/1').send(clientData).expect(200);
     });
 
-    it('should not be able to delete a nonesxistent client infos.', async () => {
-      await request(app).delete('/clients/1').send(clientData).expect(404);
+    it('should not be able to delete a nonesxistent client.', async () => {
+      await request(app)
+        .delete('/clients/1')
+        .send(clientData)
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.clientNotExists));
     });
 
     it('should not be able to update a client with invalid id format.', async () => {
-      await request(app).delete('/clients/a').send(clientData).expect(404);
+      await request(app)
+        .delete('/clients/a')
+        .send(clientData)
+        .expect(404)
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 });

@@ -1,5 +1,6 @@
 import app from '../server';
 import request from 'supertest';
+import { errorMessages } from '../errorMessages';
 
 describe('Accounts Services', () => {
   const clientData = {
@@ -31,14 +32,14 @@ describe('Accounts Services', () => {
       await request(app)
         .get('/accounts/1')
         .expect(404)
-        .then((res) => expect(res.body).toBe("Account doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.accountNotExists));
     });
 
     it('should not be able to return an account with invalid id format.', async () => {
       await request(app)
         .get('/accounts/a')
         .expect(404)
-        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 
@@ -53,7 +54,7 @@ describe('Accounts Services', () => {
         .post('/accounts')
         .send(accountData)
         .expect(404)
-        .then((res) => expect(res.body).toBe("Client doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.clientNotExists));
     });
 
     it('should not be able to return an account with invalid id format.', async () => {
@@ -61,7 +62,7 @@ describe('Accounts Services', () => {
         .post('/accounts')
         .send({ clientId: 'a' })
         .expect(404)
-        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 
@@ -77,7 +78,7 @@ describe('Accounts Services', () => {
         .delete('/accounts/1')
         .send(accountData)
         .expect(404)
-        .then((res) => expect(res.body).toBe("Account doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.accountNotExists));
     });
 
     it('should not be able to delete an account with invalid id format.', async () => {
@@ -85,7 +86,7 @@ describe('Accounts Services', () => {
         .delete('/accounts/a')
         .send(accountData)
         .expect(404)
-        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 });

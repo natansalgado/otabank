@@ -1,5 +1,6 @@
 import ClientRepository, { Client } from '../models/clients';
-import bcrypto from 'bcrypt';
+import { errorMessages } from '../errorMessages';
+import bcrypt from 'bcrypt';
 
 type ClientInfos = Pick<Client, 'name' | 'email' | 'number' | 'address' | 'password'>;
 
@@ -9,11 +10,11 @@ const findAll = async (): Promise<Client[]> => {
 };
 
 const findClient = async (id: string): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error(errorMessages.invalidIdFormat);
 
   const repo = await ClientRepository.findByPk(id);
 
-  if (!repo) return new Error("Client doesn't exists.");
+  if (!repo) return new Error(errorMessages.clientNotExists);
   return repo;
 };
 
@@ -22,11 +23,12 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
     where: { email: client.email },
   });
 
-  if (!client.name || !client.email || !client.address || !client.number || !client.password) return new Error('Invalid camp');
+  if (!client.name || !client.email || !client.address || !client.number || !client.password)
+    return new Error(errorMessages.clientInvalidCamp);
 
-  if (emailExists) return new Error('Email already exists.');
+  if (emailExists) return new Error(errorMessages.emailAlreadyExists);
 
-  const hash = await bcrypto.hash(client.password, 10);
+  const hash = await bcrypt.hash(client.password, 10);
   client.password = hash;
 
   const repo = await ClientRepository.create(client);
@@ -35,7 +37,7 @@ const addClient = async (client: ClientInfos): Promise<Client | Error> => {
 };
 
 const updateClient = async (id: string, client: Partial<ClientInfos>): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error(errorMessages.invalidIdFormat);
 
   const updateClient: Partial<ClientInfos> = {
     name: client.name !== '' ? client.name : undefined,
@@ -50,17 +52,17 @@ const updateClient = async (id: string, client: Partial<ClientInfos>): Promise<C
   });
   const repo = await ClientRepository.findByPk(id);
 
-  if (!clientExists || !repo) return new Error("Client doesn't exists.");
+  if (!clientExists || !repo) return new Error(errorMessages.clientNotExists);
 
   return repo;
 };
 
 const deleteClient = async (id: string): Promise<Client | Error> => {
-  if (!Number.isInteger(Number(id))) return new Error('Invalid ID format, use a integer number.');
+  if (!Number.isInteger(Number(id))) return new Error(errorMessages.invalidIdFormat);
 
   const repo = await ClientRepository.findByPk(id);
 
-  if (!repo) return new Error("Client doesn't exists.");
+  if (!repo) return new Error(errorMessages.clientNotExists);
 
   await ClientRepository.destroy({ where: { id } });
 

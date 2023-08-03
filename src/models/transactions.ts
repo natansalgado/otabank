@@ -42,14 +42,6 @@ export default Transaction.init(
     type: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        isIn: [['transfer', 'withdraw', 'deposit', 'balance']],
-        accountToIdRequired(value: string) {
-          if (this.type === 'transfer' && (value === undefined || value === null)) {
-            throw new Error('To make a transfer the accountToId need to be declared.');
-          }
-        },
-      },
     },
     value: {
       type: DataTypes.DECIMAL(10, 2),

@@ -1,0 +1,16 @@
+export const errorMessages = {
+  invalidIdFormat: 'Invalid ID format, use a integer number.',
+  clientNotExists: "Client doesn't exists.",
+  clientInvalidCamp: "Invalid camp, client needs the 'name', 'email', 'address', 'number' and 'password'",
+  emailAlreadyExists: 'Email already exists.',
+  accountNotExists: "Account doesn't exists.",
+  transactionNotExists: "Transaction doesn't exists.",
+  invalidAccountNumber: 'The account number needs to be an integer number.',
+  invalidTransactionType: "The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'",
+  valueIsNaN: 'The value needs to be only number.',
+  negativeValue: 'The value needs to be a positive number.',
+  transferRequiresAccountToId: "To make a transfer, the target account number needs to be declared with 'toAccount'.",
+  invalidTargetAccountNumber: 'The Target account number needs to be an integer number.',
+  targetAccountNotExists: "Target account doesn't exist.",
+  insufficientFunds: 'Insufficient funds.',
+};

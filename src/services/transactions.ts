@@ -1,6 +1,7 @@
 import TransactionsRepository, { Transaction } from '../models/transactions';
 import AccountsRepository, { Account } from '../models/accounts';
 import sequelize from '../db';
+import { errorMessages } from '../errorMessages';
 
 type TransactionInfos = Pick<Transaction, 'accountId' | 'type' | 'accountToId' | 'value'>;
 
@@ -9,20 +10,6 @@ export type Infos = {
   type: string;
   toAccount?: string | number;
   value?: string | number;
-};
-
-const errorMessages = {
-  invalidIdFormat: 'Invalid ID format, use a integer number.',
-  transactionNotExists: "Transaction doesn't exists.",
-  invalidAccountNumber: 'The account number needs to be an integer number.',
-  accountNotExists: "Account doesn't exists.",
-  transferRequiresAccountToId: "To make a transfer, the target account number needs to be declared with 'toAccount'.",
-  invalidTargetAccountNumber: 'The Target account number needs to be an integer number.',
-  targetAccountNotExists: "Target account doesn't exist.",
-  invalidTransactionType: "The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'",
-  insufficientFunds: 'Insufficient funds.',
-  negativeValue: 'The value needs to be a positive number.',
-  valueIsNaN: 'The value needs to be only number.',
 };
 
 const findAll = async (): Promise<Transaction[]> => {

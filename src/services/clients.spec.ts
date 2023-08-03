@@ -1,4 +1,6 @@
+import { Client } from '../models/clients';
 import ClientsServices from './clients';
+import { errorMessages } from '../errorMessages';
 
 describe('Clients Services', () => {
   const clientData = {
@@ -51,13 +53,13 @@ describe('Clients Services', () => {
     it('should not be able to return a nonesxistent client.', async () => {
       const client = await ClientsServices.findClient('1');
 
-      expect(client).toEqual(Error("Client doesn't exists."));
+      expect(client).toEqual(Error(errorMessages.clientNotExists));
     });
 
     it('should not be able to return a client with invalid id format.', async () => {
       const client = await ClientsServices.findClient('a');
 
-      expect(client).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(client).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 
@@ -67,12 +69,36 @@ describe('Clients Services', () => {
       expect(client).toHaveProperty('id');
     });
 
+    it('should not be able to create a client with an invalid camp.', async () => {
+      const noNameClientData = { ...clientData, name: '' };
+      const noNameClient = await ClientsServices.addClient(noNameClientData);
+
+      const noEmailClientData = { ...clientData, email: '' };
+      const noEmailClient = await ClientsServices.addClient(noEmailClientData);
+
+      const noAddressClientData = { ...clientData, address: '' };
+      const noAddressClient = await ClientsServices.addClient(noAddressClientData);
+
+      const noNumberClientData = { ...clientData, number: 0 };
+      const noNumberClient = await ClientsServices.addClient(noNumberClientData);
+
+      const noPasswordClientData = { ...clientData, password: '' };
+      const noPasswordClient = await ClientsServices.addClient(noPasswordClientData);
+
+      expect(noNameClient).toEqual(Error(errorMessages.clientInvalidCamp));
+      expect(noEmailClient).toEqual(Error(errorMessages.clientInvalidCamp));
+      expect(noAddressClient).toEqual(Error(errorMessages.clientInvalidCamp));
+      expect(noNumberClient).toEqual(Error(errorMessages.clientInvalidCamp));
+      expect(noAddressClient).toEqual(Error(errorMessages.clientInvalidCamp));
+      expect(noPasswordClient).toEqual(Error(errorMessages.clientInvalidCamp));
+    });
+
     it('should not be able to create an existing client.', async () => {
       const firstClient = await ClientsServices.addClient(clientData);
       const repeatClient = await ClientsServices.addClient(clientData);
 
       expect(firstClient).toHaveProperty('id');
-      expect(repeatClient).toEqual(Error('Email already exists.'));
+      expect(repeatClient).toEqual(Error(errorMessages.emailAlreadyExists));
     });
   });
 
@@ -88,27 +114,25 @@ describe('Clients Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const updatedClient = await ClientsServices.updateClient('1', updateData);
 
-      if (updatedClient instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
-
       expect(createdClient).toHaveProperty('id');
       expect(updatedClient).toHaveProperty('id');
       expect(updatedClient.name).toBe(updateData.name);
-      expect(updatedClient.password).toBe(updateData.password);
-      expect(updatedClient.email).toBe(clientData.email);
-      expect(updatedClient.number).toBe(clientData.number);
-      expect(updatedClient.address).toBe(updateData.address);
+      expect((updatedClient as Client).password).toBe(updateData.password);
+      expect((updatedClient as Client).email).toBe(clientData.email);
+      expect((updatedClient as Client).number).toBe(clientData.number);
+      expect((updatedClient as Client).address).toBe(updateData.address);
     });
 
     it('should not be able to update a nonesxistent client infos.', async () => {
       const client = await ClientsServices.updateClient('1', {});
 
-      expect(client).toEqual(Error("Client doesn't exists."));
+      expect(client).toEqual(Error(errorMessages.clientNotExists));
     });
 
     it('should not be able to update a client with invalid id format.', async () => {
       const client = await ClientsServices.updateClient('a', {});
 
-      expect(client).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(client).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 
@@ -117,27 +141,25 @@ describe('Clients Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const deletedClient = await ClientsServices.deleteClient('1');
 
-      if (deletedClient instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
-
       expect(createdClient).toHaveProperty('id');
       expect(deletedClient).toHaveProperty('id');
       expect(deletedClient.name).toBe(clientData.name);
-      expect(deletedClient.password).toBe(clientData.password);
-      expect(deletedClient.email).toBe(clientData.email);
-      expect(deletedClient.number).toBe(clientData.number);
-      expect(deletedClient.address).toBe(clientData.address);
+      expect((deletedClient as Client).password).toBe(clientData.password);
+      expect((deletedClient as Client).email).toBe(clientData.email);
+      expect((deletedClient as Client).number).toBe(clientData.number);
+      expect((deletedClient as Client).address).toBe(clientData.address);
     });
 
     it('should not be able to delete a nonesxistent client.', async () => {
       const client = await ClientsServices.deleteClient('1');
 
-      expect(client).toEqual(Error("Client doesn't exists."));
+      expect(client).toEqual(Error(errorMessages.clientNotExists));
     });
 
     it('should not be able to delete a client with invalid id format.', async () => {
       const client = await ClientsServices.deleteClient('a');
 
-      expect(client).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(client).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 });

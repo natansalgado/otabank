@@ -1,6 +1,7 @@
-import Accounts from '../models/accounts';
+import { Account } from '../models/accounts';
 import AccountsServices from './accounts';
 import ClientsServices from './clients';
+import { errorMessages } from '../errorMessages';
 
 describe('Accounts Services', () => {
   const clientData = {
@@ -40,23 +41,21 @@ describe('Accounts Services', () => {
       expect(createdAccount).toHaveProperty('id');
       expect(createdClient).toHaveProperty('id');
 
-      if (account instanceof Error) return expect(account.message).toBe('All right');
-
-      expect(account.clientId).toBe(Number(accountData.clientId));
+      expect((account as Account).clientId).toBe(Number(accountData.clientId));
     });
 
     it('should not be able to return a nonesxistent account.', async () => {
       const account = await AccountsServices.findAccount('1');
 
       expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error("Account doesn't exists."));
+      expect(account).toEqual(Error(errorMessages.accountNotExists));
     });
 
     it('should not be able to return an account with invalid id format.', async () => {
       const account = await AccountsServices.findAccount('a');
 
       expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(account).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 
@@ -73,14 +72,14 @@ describe('Accounts Services', () => {
       const account = await AccountsServices.addAccount(accountData.clientId);
 
       expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error("Client doesn't exists."));
+      expect(account).toEqual(Error(errorMessages.clientNotExists));
     });
 
     it('should not be able to return an account with invalid id format.', async () => {
       const account = await AccountsServices.addAccount('a');
 
       expect(account).not.toHaveProperty('id');
-      expect(account).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(account).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 
@@ -91,25 +90,21 @@ describe('Accounts Services', () => {
 
       const deletedAccount = await AccountsServices.deleteAccount('1');
 
-      if (deletedAccount instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
-
-      if (createdAccount instanceof Error) return expect(createdClient).toHaveProperty('AllRight');
-
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
-      expect(deletedAccount.id).toBe(createdAccount.id);
+      expect((deletedAccount as Account).id).toBe((createdAccount as Account).id);
     });
 
     it('should not be able to delete a nonesxistent account.', async () => {
       const account = await AccountsServices.deleteAccount('1');
 
-      expect(account).toEqual(Error("Account doesn't exists."));
+      expect(account).toEqual(Error(errorMessages.accountNotExists));
     });
 
     it('should not be able to delete an account with invalid id format.', async () => {
       const account = await AccountsServices.deleteAccount('a');
 
-      expect(account).toEqual(Error('Invalid ID format, use a integer number.'));
+      expect(account).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
 });

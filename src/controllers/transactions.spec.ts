@@ -1,6 +1,7 @@
 import app from '../server';
 import request from 'supertest';
 import { Infos } from '../services/transactions';
+import { errorMessages } from '../errorMessages';
 
 describe('Accounts Controllers', () => {
   const clientData = {
@@ -46,14 +47,14 @@ describe('Accounts Controllers', () => {
       await request(app)
         .get('/transactions/1')
         .expect(404)
-        .then((res) => expect(res.body).toBe("Transaction doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.transactionNotExists));
     });
 
     it('should not be able to return an transaction with invalid id format.', async () => {
       await request(app)
         .get('/transactions/a')
         .expect(404)
-        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 
@@ -74,7 +75,7 @@ describe('Accounts Controllers', () => {
         .post('/transactions')
         .send(transactionData('a'))
         .expect(404)
-        .then((res) => expect(res.body).toBe('The account number needs to be an integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidAccountNumber));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
@@ -85,7 +86,7 @@ describe('Accounts Controllers', () => {
           type: 'a',
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe("The type needs to be 'balance' | 'transfer' | 'withdraw' | 'deposit'"));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidTransactionType));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
@@ -94,10 +95,10 @@ describe('Accounts Controllers', () => {
         .send({
           account: 1,
           type: 'withdraw',
-          value: "a",
+          value: 'a',
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe("The value needs to be only number."));
+        .then((res) => expect(res.body).toBe(errorMessages.valueIsNaN));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
@@ -109,7 +110,7 @@ describe('Accounts Controllers', () => {
           value: -100,
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe("The value needs to be a positive number."));
+        .then((res) => expect(res.body).toBe(errorMessages.negativeValue));
     });
 
     it('should not be able to create a transaction with a nonesxistent account', async () => {
@@ -117,7 +118,7 @@ describe('Accounts Controllers', () => {
         .post('/transactions')
         .send(transactionData(123))
         .expect(404)
-        .then((res) => expect(res.body).toBe("Account doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.accountNotExists));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {
@@ -135,9 +136,7 @@ describe('Accounts Controllers', () => {
           type: 'transfer',
         })
         .expect(404)
-        .then((res) =>
-          expect(res.body).toBe("To make a transfer, the target account number needs to be declared with 'toAccount'."),
-        );
+        .then((res) => expect(res.body).toBe(errorMessages.transferRequiresAccountToId));
     });
 
     it('should not be able to create a transfer transaction with an invalid account target number.', async () => {
@@ -156,7 +155,7 @@ describe('Accounts Controllers', () => {
           toAccount: 'a',
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe('The Target account number needs to be an integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidTargetAccountNumber));
     });
 
     it('should not be able to create a transfer transaction with a nonexistent account target number.', async () => {
@@ -175,7 +174,7 @@ describe('Accounts Controllers', () => {
           toAccount: 1,
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe("Target account doesn't exist."));
+        .then((res) => expect(res.body).toBe(errorMessages.targetAccountNotExists));
     });
 
     it('should not be able to create a transfer transaction with insufficient founds.', async () => {
@@ -195,7 +194,7 @@ describe('Accounts Controllers', () => {
           toAccount: account,
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe('Insufficient funds.'));
+        .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
 
     it('should not be able to create a withdraw transaction with insufficient founds.', async () => {
@@ -214,7 +213,7 @@ describe('Accounts Controllers', () => {
           value: 200,
         })
         .expect(404)
-        .then((res) => expect(res.body).toBe('Insufficient funds.'));
+        .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
   });
 
@@ -235,14 +234,14 @@ describe('Accounts Controllers', () => {
       await request(app)
         .delete('/transactions/1')
         .expect(404)
-        .then((res) => expect(res.body).toBe("Transaction doesn't exists."));
+        .then((res) => expect(res.body).toBe(errorMessages.transactionNotExists));
     });
 
     it('should not be able to delete an transaction with invalid id format.', async () => {
       await request(app)
         .delete('/transactions/a')
         .expect(404)
-        .then((res) => expect(res.body).toBe('Invalid ID format, use a integer number.'));
+        .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
 });
