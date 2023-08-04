@@ -48,7 +48,7 @@ describe('Clients Controller', () => {
       await request(app)
         .post('/clients')
         .send(clientData)
-        .expect(400)
+        .expect(409)
         .then((res) => expect(res.body).toBe(errorMessages.emailAlreadyExists));
     });
   });
@@ -78,7 +78,7 @@ describe('Clients Controller', () => {
       await request(app)
         .patch('/clients/a')
         .send({})
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
@@ -101,7 +101,7 @@ describe('Clients Controller', () => {
       await request(app)
         .delete('/clients/a')
         .send(clientData)
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });

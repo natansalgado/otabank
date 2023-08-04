@@ -59,7 +59,7 @@ describe('Accounts Controllers', () => {
     it('should not be able to return an transaction with invalid id format.', async () => {
       await request(app)
         .get('/transactions/a')
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
@@ -80,7 +80,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData('a'))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidAccountNumber));
     });
 
@@ -88,7 +88,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(1, 'a'))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidTransactionType));
     });
 
@@ -96,7 +96,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(1, 'withdraw', 'a'))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.valueIsNaN));
     });
 
@@ -104,7 +104,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(1, 'withdraw', -100))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.negativeValue));
     });
 
@@ -127,7 +127,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(account, 'transfer'))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.transferRequiresAccountToId));
     });
 
@@ -142,7 +142,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(account, 'transfer', 100, 'a'))
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidTargetAccountNumber));
     });
 
@@ -172,7 +172,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(account, 'transfer', 200, account))
-        .expect(404)
+        .expect(400)
         .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
 
@@ -187,7 +187,7 @@ describe('Accounts Controllers', () => {
       await request(app)
         .post('/transactions')
         .send(transactionData(account, 'withdraw', 200))
-        .expect(404)
+        .expect(400)
         .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
   });
@@ -215,7 +215,7 @@ describe('Accounts Controllers', () => {
     it('should not be able to delete an transaction with invalid id format.', async () => {
       await request(app)
         .delete('/transactions/a')
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });

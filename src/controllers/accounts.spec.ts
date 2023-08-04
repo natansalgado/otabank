@@ -38,7 +38,7 @@ describe('Accounts Services', () => {
     it('should not be able to return an account with invalid id format.', async () => {
       await request(app)
         .get('/accounts/a')
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
@@ -61,7 +61,7 @@ describe('Accounts Services', () => {
       await request(app)
         .post('/accounts')
         .send({ clientId: 'a' })
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
@@ -85,7 +85,7 @@ describe('Accounts Services', () => {
       await request(app)
         .delete('/accounts/a')
         .send(accountData)
-        .expect(404)
+        .expect(406)
         .then((res) => expect(res.body).toBe(errorMessages.invalidIdFormat));
     });
   });
