@@ -16,11 +16,17 @@ describe('Accounts Controllers', () => {
     clientId: '1',
   };
 
-  const transactionData = (account: number | string) => {
+  const transactionData = (
+    account: number | string,
+    type?: string | null,
+    value?: number | string,
+    toAccount?: number | string,
+  ) => {
     return {
       account,
-      type: 'deposit',
-      value: 200,
+      type,
+      toAccount,
+      value,
     } as Infos;
   };
 
@@ -39,7 +45,7 @@ describe('Accounts Controllers', () => {
         .send(accountData)
         .expect(200)
         .then((res) => (account = res.body.number));
-      await request(app).post('/transactions').send(transactionData(account)).expect(200);
+      await request(app).post('/transactions').send(transactionData(account, 'deposit', 200)).expect(200);
       await request(app).get('/transactions/1').expect(200);
     });
 
@@ -67,7 +73,7 @@ describe('Accounts Controllers', () => {
         .send(accountData)
         .expect(200)
         .then((res) => (account = res.body.number));
-      await request(app).post('/transactions').send(transactionData(account)).expect(200);
+      await request(app).post('/transactions').send(transactionData(account, 'deposit', 200)).expect(200);
     });
 
     it('should not be able to create a transaction with invalid account number format.', async () => {
@@ -81,34 +87,23 @@ describe('Accounts Controllers', () => {
     it('should not be able to create a transaction with invalid transaction type.', async () => {
       await request(app)
         .post('/transactions')
-        .send({
-          account: 1,
-          type: 'a',
-        })
+        .send(transactionData(1, 'a'))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.invalidTransactionType));
     });
 
-    it('should not be able to create a transaction with invalid transaction type.', async () => {
+    it('should not be able to create a transaction with a invalid value.', async () => {
       await request(app)
         .post('/transactions')
-        .send({
-          account: 1,
-          type: 'withdraw',
-          value: 'a',
-        })
+        .send(transactionData(1, 'withdraw', 'a'))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.valueIsNaN));
     });
 
-    it('should not be able to create a transaction with invalid transaction type.', async () => {
+    it('should not be able to create a transaction with a negative value.', async () => {
       await request(app)
         .post('/transactions')
-        .send({
-          account: 1,
-          type: 'withdraw',
-          value: -100,
-        })
+        .send(transactionData(1, 'withdraw', -100))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.negativeValue));
     });
@@ -116,7 +111,7 @@ describe('Accounts Controllers', () => {
     it('should not be able to create a transaction with a nonesxistent account', async () => {
       await request(app)
         .post('/transactions')
-        .send(transactionData(123))
+        .send(transactionData(1, 'balance'))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.accountNotExists));
     });
@@ -131,10 +126,7 @@ describe('Accounts Controllers', () => {
         .then((res) => (account = res.body.number));
       await request(app)
         .post('/transactions')
-        .send({
-          account,
-          type: 'transfer',
-        })
+        .send(transactionData(account, 'transfer'))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.transferRequiresAccountToId));
     });
@@ -149,11 +141,7 @@ describe('Accounts Controllers', () => {
         .then((res) => (account = res.body.number));
       await request(app)
         .post('/transactions')
-        .send({
-          account,
-          type: 'transfer',
-          toAccount: 'a',
-        })
+        .send(transactionData(account, 'transfer', 100, 'a'))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.invalidTargetAccountNumber));
     });
@@ -168,11 +156,7 @@ describe('Accounts Controllers', () => {
         .then((res) => (account = res.body.number));
       await request(app)
         .post('/transactions')
-        .send({
-          account,
-          type: 'transfer',
-          toAccount: 1,
-        })
+        .send(transactionData(account, 'transfer', 100, 1))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.targetAccountNotExists));
     });
@@ -187,12 +171,7 @@ describe('Accounts Controllers', () => {
         .then((res) => (account = res.body.number));
       await request(app)
         .post('/transactions')
-        .send({
-          account,
-          type: 'transfer',
-          value: 200,
-          toAccount: account,
-        })
+        .send(transactionData(account, 'transfer', 200, account))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
@@ -207,11 +186,7 @@ describe('Accounts Controllers', () => {
         .then((res) => (account = res.body.number));
       await request(app)
         .post('/transactions')
-        .send({
-          account,
-          type: 'withdraw',
-          value: 200,
-        })
+        .send(transactionData(account, 'withdraw', 200))
         .expect(404)
         .then((res) => expect(res.body).toBe(errorMessages.insufficientFunds));
     });
@@ -226,7 +201,7 @@ describe('Accounts Controllers', () => {
         .send(accountData)
         .expect(200)
         .then((res) => (account = res.body.number));
-      await request(app).post('/transactions').send(transactionData(account)).expect(200);
+      await request(app).post('/transactions').send(transactionData(account, 'deposit', 200)).expect(200);
       await request(app).delete('/transactions/1').expect(200);
     });
 

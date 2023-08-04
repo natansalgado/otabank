@@ -14,11 +14,17 @@ describe('Accounts Services', () => {
     address: 'Test Street, 123',
   };
 
-  const transactionData = (account: number | string) => {
+  const transactionData = (
+    account: number | string,
+    type?: string | null,
+    value?: number | string,
+    toAccount?: number | string,
+  ) => {
     return {
       account,
-      type: 'deposit',
-      value: 200,
+      type,
+      toAccount,
+      value,
     } as Infos;
   };
 
@@ -28,29 +34,15 @@ describe('Accounts Services', () => {
       const createdAccount1 = await AccountsServices.addAccount('1');
       const createdAccount2 = await AccountsServices.addAccount('1');
 
-      const transactionsData: Infos[] = [
-        transactionData((createdAccount1 as Account).number),
-        {
-          account: (createdAccount1 as Account).number,
-          type: 'transfer',
-          toAccount: (createdAccount2 as Account).number,
-          value: 100,
-        },
-        {
-          account: (createdAccount1 as Account).number,
-          type: 'withdraw',
-          value: 100,
-        },
-        {
-          account: (createdAccount1 as Account).number,
-          type: 'balance',
-        },
-      ];
+      const deposit = transactionData((createdAccount1 as Account).number, 'deposit', 200);
+      const transfer = transactionData((createdAccount1 as Account).number, 'transfer', 100, (createdAccount2 as Account).number);
+      const withdraw = transactionData((createdAccount1 as Account).number, 'withdraw', 100);
+      const balan = transactionData((createdAccount1 as Account).number, 'balance');
 
-      const deposited = await TransactionsServices.addTransaction(transactionsData[0]);
-      const transfered = await TransactionsServices.addTransaction(transactionsData[1]);
-      const withdrawn = await TransactionsServices.addTransaction(transactionsData[2]);
-      const balance = await TransactionsServices.addTransaction(transactionsData[3]);
+      const deposited = await TransactionsServices.addTransaction(deposit);
+      const transfered = await TransactionsServices.addTransaction(transfer);
+      const withdrawn = await TransactionsServices.addTransaction(withdraw);
+      const balance = await TransactionsServices.addTransaction(balan);
 
       const transactions = await TransactionsServices.findAll();
 
@@ -61,7 +53,7 @@ describe('Accounts Services', () => {
       expect(transfered).toHaveProperty('id');
       expect(withdrawn).toHaveProperty('id');
       expect(balance).toHaveProperty('id');
-      expect(transactions).toHaveLength(transactionsData.length);
+      expect(transactions).toHaveLength(4);
     });
   });
 
@@ -70,7 +62,8 @@ describe('Accounts Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
 
-      const createdTransaction = await TransactionsServices.addTransaction(transactionData((createdAccount as Account).number));
+      const deposit = transactionData((createdAccount as Account).number, 'deposit', 200);
+      const createdTransaction = await TransactionsServices.addTransaction(deposit);
 
       const transaction = await TransactionsServices.findTransaction('1');
 
@@ -84,14 +77,12 @@ describe('Accounts Services', () => {
     it('should not be able to return a nonesxistent transaction.', async () => {
       const transaction = await TransactionsServices.findTransaction('1');
 
-      expect(transaction).not.toHaveProperty('id');
       expect(transaction).toEqual(Error(errorMessages.transactionNotExists));
     });
 
     it('should not be able to return an transaction with invalid id format.', async () => {
       const transaction = await TransactionsServices.findTransaction('a');
 
-      expect(transaction).not.toHaveProperty('id');
       expect(transaction).toEqual(Error(errorMessages.invalidIdFormat));
     });
   });
@@ -101,68 +92,53 @@ describe('Accounts Services', () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
 
-      const transaction = await TransactionsServices.addTransaction(transactionData((createdAccount as Account).number));
+      const deposit = transactionData((createdAccount as Account).number, 'deposit', 200);
+      const transaction = await TransactionsServices.addTransaction(deposit);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
-      expect(transaction).toHaveProperty('id');
       expect(transaction).toHaveProperty('id');
       expect((transaction as Transaction).value).toBe('200.00');
     });
 
     it('should not be able to create a transaction with invalid account number format.', async () => {
-      const transfer = await TransactionsServices.addTransaction(transactionData('a'));
+      const invalid = await TransactionsServices.addTransaction(transactionData('a'));
 
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error(errorMessages.invalidAccountNumber));
+      expect(invalid).toEqual(Error(errorMessages.invalidAccountNumber));
     });
 
     it('should not be able to create a transaction with invalid transaction type.', async () => {
-      const transfer = await TransactionsServices.addTransaction({
-        account: 1,
-        type: 'a',
-      });
+      const invalidData = transactionData(1, 'a');
+      const invalid = await TransactionsServices.addTransaction(invalidData);
 
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error(errorMessages.invalidTransactionType));
+      expect(invalid).toEqual(Error(errorMessages.invalidTransactionType));
     });
 
     it('should not be able to create a transaction with a invalid value.', async () => {
-      const transfer = await TransactionsServices.addTransaction({
-        account: 1,
-        type: 'withdraw',
-        value: 'a',
-      });
+      const transferData = transactionData(1, 'withdraw', 'a');
+      const invalid = await TransactionsServices.addTransaction(transferData);
 
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error(errorMessages.valueIsNaN));
+      expect(invalid).toEqual(Error(errorMessages.valueIsNaN));
     });
 
     it('should not be able to create a transaction with a negative value.', async () => {
-      const transfer = await TransactionsServices.addTransaction({
-        account: 1,
-        type: 'withdraw',
-        value: -100,
-      });
+      const withdrawData = transactionData(1, 'withdraw', -100);
+      const invalid = await TransactionsServices.addTransaction(withdrawData);
 
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error(errorMessages.negativeValue));
+      expect(invalid).toEqual(Error(errorMessages.negativeValue));
     });
 
     it('should not be able to create a transaction with a nonesxistent account', async () => {
-      const transfer = await TransactionsServices.addTransaction(transactionData(1));
+      const invalid = await TransactionsServices.addTransaction(transactionData(1, 'withdraw'));
 
-      expect(transfer).not.toHaveProperty('id');
-      expect(transfer).toEqual(Error(errorMessages.accountNotExists));
+      expect(invalid).toEqual(Error(errorMessages.accountNotExists));
     });
 
     it('should not be able to create a transfer transaction without an account target number.', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const transfer = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'transfer',
-      });
+      const transferData = transactionData((createdAccount as Account).number, 'transfer');
+      const transfer = await TransactionsServices.addTransaction(transferData);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -173,11 +149,8 @@ describe('Accounts Services', () => {
     it('should not be able to create a transfer transaction with an invalid account target number.', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const transfer = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'transfer',
-        toAccount: 'a',
-      });
+      const transferData = transactionData((createdAccount as Account).number, 'transfer', 200, 'a');
+      const transfer = await TransactionsServices.addTransaction(transferData);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -188,11 +161,8 @@ describe('Accounts Services', () => {
     it('should not be able to create a transfer transaction with a nonexistent account target number.', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const transfer = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'transfer',
-        toAccount: 1,
-      });
+      const transferData = transactionData((createdAccount as Account).number, 'transfer', '', 1);
+      const transfer = await TransactionsServices.addTransaction(transferData);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -203,12 +173,9 @@ describe('Accounts Services', () => {
     it('should not be able to create a transfer transaction with insufficient founds.', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const transfer = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'transfer',
-        toAccount: (createdAccount as Account).number,
-        value: 100,
-      });
+      const accountNumber = (createdAccount as Account).number;
+      const transferData = transactionData(accountNumber, 'transfer', '100', accountNumber);
+      const transfer = await TransactionsServices.addTransaction(transferData);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -219,11 +186,8 @@ describe('Accounts Services', () => {
     it('should not be able to create a withdraw transaction with insufficient founds.', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const transfer = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'withdraw',
-        value: 100,
-      });
+      const transferData = transactionData((createdAccount as Account).number, 'withdraw', 100);
+      const transfer = await TransactionsServices.addTransaction(transferData);
 
       expect(createdClient).toHaveProperty('id');
       expect(createdAccount).toHaveProperty('id');
@@ -236,10 +200,8 @@ describe('Accounts Services', () => {
     it('should be able to delete an transaction', async () => {
       const createdClient = await ClientsServices.addClient(clientData);
       const createdAccount = await AccountsServices.addAccount('1');
-      const createdTransaction = await TransactionsServices.addTransaction({
-        account: (createdAccount as Account).number,
-        type: 'balance',
-      });
+      const balanceData = transactionData((createdAccount as Account).number, 'balance');
+      const createdTransaction = await TransactionsServices.addTransaction(balanceData);
 
       const deletedTransaction = await TransactionsServices.deleteTransaction('1');
 
